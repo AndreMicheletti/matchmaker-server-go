@@ -21,10 +21,6 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 func writeMessage(conn *websocket.Conn, outChannel chan []byte, msgType int) {
 	for msg := range outChannel {
-		if (msg[0] == 'q') {
-			log.Printf("[WEBSOCKET] QUIT SIGNAL RECEIVED for writing channel")
-			return
-		}
 		log.Printf("[WEBSOCKET] returning message: %s\n", msg)
 		if err := conn.WriteMessage(msgType, msg); err != nil {
 			log.Println(err)
@@ -40,9 +36,9 @@ func websocketHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Printf("[WEBSOCKET] connection received")
 	outCh := make(chan []byte, 256)
-	defer close(outCh)
 	defer conn.Close()
-	go writeMessage(conn, outCh, 1)
+	defer close(outCh)
+	go writeMessage(conn, outCh, websocket.TextMessage)
 	for {
 		_, p, err := conn.ReadMessage()
 		if err != nil {
