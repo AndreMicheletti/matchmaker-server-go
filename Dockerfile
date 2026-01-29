@@ -10,10 +10,10 @@ COPY go.mod go.sum* ./
 RUN go mod download
 
 # Copy source code
-COPY *.go ./
+COPY ./ ./
 
 # Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o matchmaker ./cmd/matchmaker/
 
 # Runtime stage
 FROM alpine:latest
@@ -23,10 +23,10 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 
 # Copy the binary from builder
-COPY --from=builder /app/main .
+COPY --from=builder /app/matchmaker .
 
 # Expose port 8080
 EXPOSE 8080
 
 # Run the application
-CMD ["./main"]
+CMD ["./matchmaker"]

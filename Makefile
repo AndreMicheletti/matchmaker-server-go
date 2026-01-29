@@ -1,6 +1,6 @@
 
 run:
-	go run main.go
+	go run cmd/matchmaker/main.go
 
 docker-build:
 	docker build . -t go-practice
