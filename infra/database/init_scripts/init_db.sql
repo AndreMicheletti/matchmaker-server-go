@@ -1,0 +1,4 @@
+CREATE DATABASE go_practice;
+CREATE USER go_practice WITH ENCRYPTED PASSWORD 'go_practice';
+GRANT ALL PRIVILEGES ON DATABASE go_practice TO go_practice;
+ALTER USER go_practice WITH SUPERUSER;
