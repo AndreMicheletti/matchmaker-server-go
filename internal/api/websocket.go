@@ -3,6 +3,8 @@ package api
 import (
 	"log"
 	"net/http"
+
+	"github.com/AndreMicheletti/matchmaker-server-go/internal/matchmaker"
 	"github.com/gorilla/websocket"
 )
 
@@ -26,7 +28,7 @@ func (c *Client) writePump() {
 	}
 }
 
-func (c *Client) readPump() {
+func (c *Client) readPump(eng *matchmaker.Engine) {
 	for {
 		_, msg, err := c.Conn.ReadMessage()
 		if err != nil {
@@ -34,13 +36,14 @@ func (c *Client) readPump() {
 			return
 		}
 		log.Printf("[WEBSOCKET] message received: %s\n", msg)
-		c.SendCh <- msg
+		eng.CommandChannel() <- msg
 	}
 }
 
 func (s *Server) handleWebsocket(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	userID := query.Get("user_id")
+	// playerID, err := strconv.ParseInt(userID, 10, 64)
 
 	if userID == "" {
 		log.Println("[WEBSOCKET] user_id não fornecido")
@@ -62,5 +65,5 @@ func (s *Server) handleWebsocket(w http.ResponseWriter, r *http.Request) {
 	defer close(c.SendCh)
 	defer conn.Close()
 	go c.writePump()
-	c.readPump()
+	c.readPump(s.Engine())
 }
