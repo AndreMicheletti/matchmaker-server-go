@@ -5,5 +5,8 @@ run:
 docker-build:
 	docker build . -t go-practice
 
-compose-local: docker-build
-	docker-compose up
+compose-local:
+	docker-compose up redis
+
+compose:
+	docker-compose up --build
